@@ -1,0 +1,26 @@
+{
+  "name": "signinsystem",
+  "version": "1.0.0",
+  "description": "Universal Sign in system for my websites",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MisterGuy2013/SigninSystem.git"
+  },
+  "author": "MisterGuy2013",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MisterGuy2013/SigninSystem/issues"
+  },
+  "homepage": "https://github.com/MisterGuy2013/SigninSystem#readme",
+  "dependencies": {
+    "body-parser": "^1.19.1",
+    "crypto": "^1.0.1",
+    "express": "^4.17.2",
+    "path": "^0.12.7"
+  }
+}
