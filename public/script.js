@@ -1,3 +1,4 @@
+var darkMode = false;
 function signup(username, password){
     if(password == undefined || username == undefined){
         var throwError = false;
@@ -68,6 +69,27 @@ $.ajax({
 
 
 function login(username, password){
+    var throwError = false;
+    if(password == undefined || username == undefined){
+        
+        if($("#Username")[0].value == ""){
+            $("#1Err")[0].classList.remove("hidden");
+            throwError = true;
+        }
+        else{
+            $("#1Err")[0].classList.add("hidden");
+        }
+        if($("#password")[0].value == ""){
+            $("#2Err")[0].classList.remove("hidden");
+            throwError = true;
+        }
+        else{
+            $("#2Err")[0].classList.add("hidden");
+        }
+        username = $("#Username")[0].value;
+        password = $("#password")[0].value;
+    }
+    if(!throwError){
     $.ajax({
     
         'url' : '/login',
@@ -79,4 +101,23 @@ function login(username, password){
             alert('Data: '+data);
     
         }
-    });}
+    });}}
+
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        console.log(`changed to ${e.matches ? "dark" : "light"} mode`)
+      
+      
+        if(e.matches == false){
+            $("body")[0].style = "color:black;background-color: white;";
+            darkMode = false;
+        }
+        else{
+            $("body")[0].style = "color:white;background-color: black;";
+            darkMode = true;
+        }
+    });
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        $("body")[0].style = "color:white;background-color: black;";
+            darkMode = true;
+    }
+    

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="jquery-3.6.0.js"></script>
+  <link href="style.css" rel="stylesheet">
+
+</head>
+<body>
+    <form onsubmit="login()">
+      <div>
+        <input type="text" id="Username" placeholder="Username"></input>
+        <div class="hidden" id="1Err">This is a required question</div>
+      </div>
+
+      <br>
+
+      <div>
+        <input placeholder="Password" type="password" id="password"></input> 
+        <div class="hidden" id="2Err">This is a required question</div>
+      </div>
+
+      <br>
+
+      <button onclick="login()" type="button">Login</button> </form>
+    <script src="script.js"></script>
+    </body>
+    </html>
