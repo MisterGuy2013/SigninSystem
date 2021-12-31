@@ -154,6 +154,118 @@ else{
 
 
 
+function sendEmail(username, email){
+    var data = fs.readFileSync('./Database/emailInfo.txt', 'utf8');
+    var emailUsername = data.split("|")[0];
+    var emailPassword = data.split("|")[1];
+
+    var emailService = "gmail";
+
+    var token = randomBytes(32).toString('hex');
+
+    var beggingString = `http://localhost:3000`
+
+    var errorMes = "Username not found";
+    if(users.filter(e => e.Username === username).length > 0 == true){
+    const user = users.find(v => v.Username === username);
+    const userIndex = users.findIndex(v => v.Username === username);
+
+    if(user.Email === email){
+        user.Token = token;
+        users.splice(userIndex, userIndex, user);
+        writeUser(users);
+
+        setTimeout(function(){
+            user.Token = "E";
+            users.splice(userIndex, userIndex, user);
+            writeUser(users);
+            console.log("expired");
+        }, 300000);
+
+    var transporter = nodemailer.createTransport({
+        service: emailService,
+        auth: {
+          user: emailUsername,
+          pass: emailPassword
+        }
+      });
+      
+      var mailOptions = {
+        from: emailUsername,
+        to: email,
+        subject: 'ChickenCam SIS Password Reset',
+        html: `<html> <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script><body>
+        <h1>Reset Password</h1><a href='${beggingString}/resetService.html?username=${user.Username}&token=${token}'>Click to Reset Password</a>
+        <div>This link will expire in 5 minutes</div></body><style>body{
+            color:black;
+            background-color: white;
+        }</style>
+        
+        <script>window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {                   
+            if(e.matches == false){
+                $("body")[0].style = "color:black;background-color: white;";
+                darkMode = false;
+            }
+            else{
+                $("body")[0].style = "color:white;background-color: black;";
+                darkMode = true;
+            }
+        });
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            $("body")[0].style = "color:white;background-color: black;";
+                darkMode = true;
+        }</script>
+        
+        </html>`
+      };
+      
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      }); 
+    }
+    else{
+        return errorMes;
+    }
+
+
+    }
+    else{
+        return errorMes;
+    }
+
+}
+
+
+function resetPassword(username, token, password){
+    var errorMes = "Username not found";
+    if(users.filter(e => e.Username === username).length > 0 == true){
+    const user = users.find(v => v.Username === username);
+    const userIndex = users.findIndex(v => v.Username === username);
+    if(user.Token == token){
+        const salt = randomBytes(16).toString('hex');
+        const hashedPassword = scryptSync(password, salt, 64).toString('hex');
+        user.Password = `${salt}:${hashedPassword}`;
+        user.Token = "E";
+        users.splice(userIndex, userIndex, user);
+        writeUser(users);
+        return "Password Reset!"
+    }
+    else{
+        return "Error, Token Expired"
+    }
+
+    }
+    else{
+        return errorMes;
+    }
+}
+
+
+
 
 
 
@@ -162,6 +274,11 @@ else{
 //ON STARTUP
 const users = readUsers();
 console.log(users.length);
+
+for(let i = 0; i<users.length; i++){
+    users[i].Token = "E";
+}
+writeUser(users);
 
 /* fs.readdir("./", function (err, files) {
     console.log(files)
@@ -212,4 +329,22 @@ app.post('/getUserData', function(req,res){
 
     res.send(user);
 });
+app.post('/forgot', function(req,res){
+    sendEmail(req.body.username, req.body.email);
+    res.send("done");
+});
+app.post("/resetService", function(req, res){
+    var username = req.body.username;
+    var newPass = req.body.newPassword;
+    var token = req.body.token;
+    if(token == "E"){
+        //To make sure people don't use blank tokens
+        token = "";
+    }
+    var response = resetPassword(username, token, newPass);
+    res.send(response);
+
+});
+
+
 app.listen(port);
