@@ -1,7 +1,8 @@
 var darkMode = false;
 function signup(username, password){
+    var throwError = false;
     if(password == undefined || username == undefined){
-        var throwError = false;
+        
         if($("#Username")[0].value == ""){
             $("#1Err")[0].classList.remove("hidden");
             throwError = true;
@@ -69,6 +70,11 @@ $.ajax({
 
 
 function login(username, password){
+
+
+    
+
+
     var throwError = false;
     if(password == undefined || username == undefined){
         
@@ -102,6 +108,105 @@ function login(username, password){
     
         }
     });}}
+
+
+
+function forgot(username, email){
+
+
+    
+
+
+    var throwError = false;
+    if(email == undefined || username == undefined){
+        
+        if($("#Username")[0].value == ""){
+            $("#1Err")[0].classList.remove("hidden");
+            throwError = true;
+        }
+        else{
+            $("#1Err")[0].classList.add("hidden");
+        }
+        if($("#email")[0].value == ""){
+            $("#2Err")[0].classList.remove("hidden");
+            throwError = true;
+        }
+        else{
+            $("#2Err")[0].classList.add("hidden");
+        }
+        username = $("#Username")[0].value;
+        email = $("#email")[0].value;
+    }
+    if(!throwError){
+        $.ajax({
+        
+            'url' : '/forgot',
+            'type' : 'POST',
+            'data' : {
+                'username' : username, "email" : email
+            },
+            'success' : function(data) {              
+                alert('Data: '+data);
+        
+            }
+        });}
+
+}
+
+
+
+function sendResetPasswordRequest(password){
+    let params = new URLSearchParams(location.search);
+    var username = params.get("username");
+    var token = params.get("token");
+
+
+    var throwError = false;
+    if(password == undefined){
+        
+        if($("#Password")[0].value == ""){
+            $("#1Err")[0].classList.remove("hidden");
+            throwError = true;
+        }
+        else{
+            $("#1Err")[0].classList.add("hidden");
+        }
+        if($("#PasswordComf")[0].value == ""){
+            $("#2Err")[0].classList.remove("hidden");
+            throwError = true;
+        }
+        else{
+            $("#2Err")[0].classList.add("hidden");
+        
+        password = $("#Password")[0].value;
+        confPass = $("#PasswordComf")[0].value;
+        if(password != confPass){
+            throwError = true;
+            alert("Error passwords do not match");
+        }
+        
+        
+    }}
+    if(!throwError){
+        $.ajax({
+        
+            'url' : '/resetService',
+            'type' : 'POST',
+            'data' : {
+                'username' : username, "token" : token, "newPassword": password
+            },
+            'success' : function(data) {              
+                alert('Data: '+data);
+        
+            }
+        });
+    }
+}
+
+
+
+
+
 
     window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
         console.log(`changed to ${e.matches ? "dark" : "light"} mode`)
