@@ -2,8 +2,10 @@ const { createHash } = require('crypto');
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require('path');
-const { scryptSync, randomBytes, timingSafeEqual } = require('crypto');
+const { scryptSync, randomBytes, timingSafeEqual, createSign, createVerify } = require('crypto');
+const { publicKey, privateKey } = require('keypair');
 const fs = require("fs");
+const nodemailer = require('nodemailer'); 
 
 const app =  express();
 const port = process.env.PORT || 8080;
@@ -23,28 +25,36 @@ function hash(str) {
 }
 
 function writeUser(content){
-    fs.writeFile('/Database/Users.json', content, { flag: 'a+' }, err => {console.log(err);})
+    jsonContent = JSON.stringify(content);
+    fs.writeFile('./Database/Users.json', jsonContent, { flag: 'w+' }, err => {console.log(err);})
 }
 function readUsers(){
-    fs.readFile('/package.json', (err, data) => {
-        if (err) {
-          console.error(err)
-          return "Oops, a server error has occured. Please try again later";
-        }
-        jsonData = JSON.parse(data);
-        return jsonData
-      })
+    var data = fs.readFileSync('./Database/Users.json', 'utf8');
+    var jsonData = JSON.parse(data);
+    return jsonData;
 }
-function modifyUser(userID, newUser){
 
+
+function modifyUser(userID, newUser){
+    
 }
+
+
+
+
 
 
 function signup(username, email, password) {
+    
     const salt = randomBytes(16).toString('hex');
     const hashedPassword = scryptSync(password, salt, 64).toString('hex');
 
     const user = { Username:username, Password: `${salt}:${hashedPassword}`, Email:email }
+
+
+    console.log(users);
+
+
   if(!users.filter(e => e.Username === username).length > 0){
     users.push(user);
     writeUser(users);
@@ -53,21 +63,85 @@ function signup(username, email, password) {
   else{
       return "Error, username already in use"
   }
+  
+  
 }
 
 function login(username, password) {
     var errorMes = "Username or Password incorrect";
-    if(users.username.includes(username) == true){
-    const user = users.find(v => v.username === username);
+    if(users.filter(e => e.Username === username).length > 0 == true){
+    const user = users.find(v => v.Username === username);
   
-    const [salt, key] = user.password.split(':');
+    const [salt, key] = user.Password.split(':');
     const hashedBuffer = scryptSync(password, salt, 64);
   
     const keyBuffer = Buffer.from(key, 'hex');
     const match = timingSafeEqual(hashedBuffer, keyBuffer);
     
     if (match) {
-        return 'login success!'
+        
+
+        return `login success!`
+    } else {
+        return errorMes;
+    }
+}
+else{
+    return errorMes;
+}
+}
+
+function addUserData(username, password, appName, data){
+    var errorMes = "Username or Password incorrect";
+    if(users.filter(e => e.Username === username).length > 0 == true){
+    const user = users.find(v => v.Username === username);
+    const userIndex = users.findIndex(v => v.Username === username);
+  
+    const [salt, key] = user.Password.split(':');
+    const hashedBuffer = scryptSync(password, salt, 64);
+  
+    const keyBuffer = Buffer.from(key, 'hex');
+    const match = timingSafeEqual(hashedBuffer, keyBuffer);
+    
+    if (match) {
+        if(appName == "Username" || appName == "Email" || appName == "Password"){
+         return "YOU DO NOT HAVE THE CORRECT PERMISSIONS";
+        }
+        else{
+        user[appName] = JSON.parse(data);
+        users.splice(userIndex, userIndex, user);
+        console.log(user);
+        writeUser(users);
+        return `success`
+        }
+    } else {
+        return errorMes;
+    }
+}
+else{
+    return errorMes;
+}
+}
+
+function getUserData(username, password, appName){
+    var errorMes = "Username or Password incorrect";
+    if(users.filter(e => e.Username === username).length > 0 == true){
+    const user = users.find(v => v.Username === username);
+  
+    const [salt, key] = user.Password.split(':');
+    const hashedBuffer = scryptSync(password, salt, 64);
+  
+    const keyBuffer = Buffer.from(key, 'hex');
+    const match = timingSafeEqual(hashedBuffer, keyBuffer);
+    
+    if (match) {
+        if(appName == "Username" || appName == "Email" || appName == "Password"){
+            return "you do not have the permissions neccessary to read this file";
+        }
+        else{
+
+        return user[appName];
+        }
     } else {
         return errorMes;
     }
@@ -85,14 +159,13 @@ else{
 
 
 
-
 //ON STARTUP
-
 const users = readUsers();
-console.log(users);
-fs.readdir("/", function (err, files) {
+console.log(users.length);
+
+/* fs.readdir("./", function (err, files) {
     console.log(files)
-});
+});*/
 
 
 
@@ -117,7 +190,6 @@ app.get('index.html', function(req, res) {
     res.send("");
 });
 app.post('/signup', function(req,res){
-    console.log(req.body.password);
     var user = signup(req.body.username, req.body.email, req.body.password);
     console.log(user);
 
@@ -126,6 +198,17 @@ app.post('/signup', function(req,res){
 app.post('/login', function(req,res){
     var user = login(req.body.username, req.body.password);
     console.log(user);
+
+    res.send(user);
+});
+app.post('/addUserData', function(req,res){
+    var user = addUserData(req.body.username, req.body.password, req.body.appName, req.body.data);
+    console.log(user);
+
+    res.send(user);
+});
+app.post('/getUserData', function(req,res){
+    var user = getUserData(req.body.username, req.body.password, req.body.appName);
 
     res.send(user);
 });
