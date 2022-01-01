@@ -1,3 +1,6 @@
+:root{
+  --darkblue:rgb(50, 35, 184);
+}
 body{
     color:black;
     background-color: white;
@@ -5,4 +8,71 @@ body{
 
 .hidden{
     display:none;
+}
+
+header {
+  background-color: rgb(0, 6, 87);
+  padding: 30px;
+  height: 15%;
+  text-align: center;
+  font-size: 35px;
+  color: white;
+  margin:0%;
+}
+footer {
+  position:absolute; 
+  bottom:5px;
+  background-color: rgb(0, 0, 0);
+  padding: 10px;
+  text-align: center;
+  color: white;
+}
+
+button{
+  border-radius:5%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: inline-block;
+  margin:1%;
+  background: rgb(12, 1, 107);
+  color: rgba(255, 255, 255, 0.719);
+  padding: 7px 50px;
+  cursor: pointer;
+  transition: .2s;
+  box-shadow: 
+    0px 0px var(--darkblue),
+    1px 1px var(--darkblue),
+    2px 2px var(--darkblue),
+    3px 3px var(--darkblue),
+    4px 4px var(--darkblue);
+}
+
+button:hover{
+  transform: translate(2px, 2px);
+  box-shadow: 
+    0px 0px var(--darkblue),
+    0.5px 0.5px var(--darkblue),
+    1px 1px var(--darkblue),
+    1.5px 1.5px var(--darkblue),
+    2px 2px var(--darkblue);
+  background: var(--darkblue);
+  
+  transition: .2s;
+}
+button:active{
+  transform: translate(2px, 2px);
+  box-shadow:none;
+  transition: 0.1s;
+}
+input{
+  margin:1%;
+  background-color:rgb(0, 23, 156);
+  color:orange;
+}
+
+
+input:hover{
+  margin:1%;
+  background-color:rgb(0, 0, 70);
+  color:rgb(255, 221, 159);
 }

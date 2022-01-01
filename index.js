@@ -82,7 +82,8 @@ function login(username, password) {
     var errorMes = "Username or Password incorrect";
     if(users.filter(e => e.Username === username).length > 0 == true){
     const user = users.find(v => v.Username === username);
-  
+    const userIndex = users.findIndex(v => v.Username === username);
+
     const [salt, key] = user.Password.split(':');
     const hashedBuffer = scryptSync(password, salt, 64);
   
@@ -90,9 +91,12 @@ function login(username, password) {
     const match = timingSafeEqual(hashedBuffer, keyBuffer);
     
     if (match) {
+        user.loginSession = randomBytes(32).toString('hex');
+
+        users.splice(userIndex, userIndex, user);
         
 
-        return `login success!`
+        return `login success!|${user.Username}|${user.loginSession}`
     } else {
         return errorMes;
     }
@@ -102,17 +106,15 @@ else{
 }
 }
 
-function addUserData(username, password, appName, data){
-    var errorMes = "Username or Password incorrect";
+function addUserData(username, loginSession, appName, data){
+    var errorMes = "Username or SessionID incorrect";
     if(users.filter(e => e.Username === username).length > 0 == true){
     const user = users.find(v => v.Username === username);
     const userIndex = users.findIndex(v => v.Username === username);
   
-    const [salt, key] = user.Password.split(':');
-    const hashedBuffer = scryptSync(password, salt, 64);
+    
   
-    const keyBuffer = Buffer.from(key, 'hex');
-    const match = timingSafeEqual(hashedBuffer, keyBuffer);
+    const match = user.loginSession == loginSession;
     
     if (match) {
         if(appName == "Username" || appName == "Email" || appName == "Password"){
@@ -134,16 +136,15 @@ else{
 }
 }
 
-function getUserData(username, password, appName){
-    var errorMes = "Username or Password incorrect";
+function getUserData(username, loginSession, appName){
+    var errorMes = "Username or SessionID incorrect";
     if(users.filter(e => e.Username === username).length > 0 == true){
     const user = users.find(v => v.Username === username);
   
-    const [salt, key] = user.Password.split(':');
-    const hashedBuffer = scryptSync(password, salt, 64);
+    
+    
   
-    const keyBuffer = Buffer.from(key, 'hex');
-    const match = timingSafeEqual(hashedBuffer, keyBuffer);
+    const match = user.loginSession == loginSession;
     
     if (match) {
         if(appName == "Username" || appName == "Email" || appName == "Password"){
@@ -151,7 +152,7 @@ function getUserData(username, password, appName){
         }
         else{
 
-        return user[appName];
+        return JSON.stringify(user[appName]);
         }
     } else {
         return errorMes;
@@ -298,6 +299,7 @@ function start(){
     console.log(users.length);
     for(let i = 0; i<users.length; i++){
       users[i].Token = "E";
+      users[i].loginSession = "E";
     }
     //console.log();
     writeUser(users);
@@ -352,13 +354,24 @@ app.post('/login', function(req,res){
     res.send(user);
 });
 app.post('/addUserData', function(req,res){
-    var user = addUserData(req.body.username, req.body.password, req.body.appName, req.body.data);
+  var session = req.body.session;
+   if(session == "E"){
+        //To make sure people don't use blank tokens
+        session = "";
+    }
+    var user = addUserData(req.body.username, session, req.body.appName, req.body.data);
     console.log(user);
 
     res.send(user);
 });
 app.post('/getUserData', function(req,res){
-    var user = getUserData(req.body.username, req.body.password, req.body.appName);
+   var session = req.body.session;
+   if(session == "E"){
+        //To make sure people don't use blank tokens
+        session = "";
+    }
+    var user = getUserData(req.body.username, session, req.body.appName);
+    
 
     res.send(user);
 });

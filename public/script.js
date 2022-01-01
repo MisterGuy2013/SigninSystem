@@ -61,6 +61,12 @@ $.ajax({
     },
     'success' : function(data) {              
         alert('Data: '+data);
+        if(data){
+          var params = new URLSearchParams(location.search);
+          if(params.get("redirect")==""){
+            redirectMain("https://CCamSIS.misterguy2013.repl.co","?","?")
+          }
+        }
 
     }
 });
@@ -204,7 +210,16 @@ function sendResetPasswordRequest(password){
 }
 
 
-
+function mainlogin(){
+  var username = params.get("username");
+  var token = params.get("password");
+  if(username){
+    
+  }
+}
+function redirectMain(url,username,sessionID){
+  window.location.replace(url + `?username=${username}&session=${sessionID}`);
+}
 
 
 
