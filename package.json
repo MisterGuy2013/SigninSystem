@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/MisterGuy2013/SigninSystem#readme",
   "dependencies": {
+    "@replit/database": "^2.0.1",
     "body-parser": "^1.19.1",
     "crypto": "^1.0.1",
     "express": "^4.17.2",
@@ -25,5 +26,6 @@
     "keypair": "^1.0.4",
     "nodemailer": "^6.7.2",
     "path": "^0.12.7"
-  }
+  },
+  "devDependencies": {}
 }

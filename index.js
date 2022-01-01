@@ -7,6 +7,11 @@ const { publicKey, privateKey } = require('keypair');
 const fs = require("fs");
 const nodemailer = require('nodemailer'); 
 
+const Database = require("@replit/database");
+
+const db = new Database()
+
+
 const app =  express();
 const port = process.env.PORT || 8080;
 
@@ -25,13 +30,18 @@ function hash(str) {
 }
 
 function writeUser(content){
-    jsonContent = JSON.stringify(content);
-    fs.writeFile('./Database/Users.json', jsonContent, { flag: 'w+' }, err => {console.log(err);})
+    var jsonContent = JSON.stringify(content);
+    jsonContent = JSON.stringify(jsonContent);
+    //console.log(jsonContent);
+    db.set("users", jsonContent).then(() => {});
 }
-function readUsers(){
-    var data = fs.readFileSync('./Database/Users.json', 'utf8');
+async function readUsers(){
+    console.log("hi");
+    var data = await db.get("users").then(value => {return value;});
+    //console.log("data" + data);
     var jsonData = JSON.parse(data);
     return jsonData;
+    
 }
 
 
@@ -52,7 +62,7 @@ function signup(username, email, password) {
     const user = { Username:username, Password: `${salt}:${hashedPassword}`, Email:email }
 
 
-    console.log(users);
+    //console.log(users);
 
 
   if(!users.filter(e => e.Username === username).length > 0){
@@ -68,6 +78,7 @@ function signup(username, email, password) {
 }
 
 function login(username, password) {
+  
     var errorMes = "Username or Password incorrect";
     if(users.filter(e => e.Username === username).length > 0 == true){
     const user = users.find(v => v.Username === username);
@@ -155,15 +166,15 @@ else{
 
 
 function sendEmail(username, email){
-    var data = fs.readFileSync('./Database/emailInfo.txt', 'utf8');
-    var emailUsername = data.split("|")[0];
-    var emailPassword = data.split("|")[1];
+   
+    var emailUsername = process.env['emailUsername'];
+    var emailPassword = process.env['appPassword'];
 
     var emailService = "gmail";
 
     var token = randomBytes(32).toString('hex');
 
-    var beggingString = `http://localhost:3000`
+    var beggingString = `https://CCamSIS.misterguy2013.repl.co`;
 
     var errorMes = "Username not found";
     if(users.filter(e => e.Username === username).length > 0 == true){
@@ -272,13 +283,35 @@ function resetPassword(username, token, password){
 
 
 //ON STARTUP
-const users = readUsers();
-console.log(users.length);
+//db.set("users", JSON.stringify(process.env["default"])).then(() => {console.log("done");});
 
-for(let i = 0; i<users.length; i++){
-    users[i].Token = "E";
+var users = [];
+
+function start(){
+
+  var data = db.get("users").then(value => {
+
+    //console.log("data" + value);
+    var jsonData = JSON.parse(value);
+    jsonData = JSON.parse(jsonData);
+    users = jsonData;
+    console.log(users.length);
+    for(let i = 0; i<users.length; i++){
+      users[i].Token = "E";
+    }
+    //console.log();
+    writeUser(users);
+
+  });
+    
+  
 }
-writeUser(users);
+
+start();
+//console.log(users.length);
+
+
+
 
 /* fs.readdir("./", function (err, files) {
     console.log(files)
