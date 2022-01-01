@@ -96,7 +96,7 @@ function login(username, password) {
         users.splice(userIndex, userIndex, user);
         
 
-        return `login success!|${user.Username}|${user.loginSession}`
+        return `Login success!|${user.Username}|${user.loginSession}`
     } else {
         return errorMes;
     }
@@ -123,7 +123,7 @@ function addUserData(username, loginSession, appName, data){
         else{
         user[appName] = JSON.parse(data);
         users.splice(userIndex, userIndex, user);
-        console.log(user);
+        //console.log(user);
         writeUser(users);
         return `success`
         }
@@ -343,13 +343,13 @@ app.get('index.html', function(req, res) {
 });
 app.post('/signup', function(req,res){
     var user = signup(req.body.username, req.body.email, req.body.password);
-    console.log(user);
+    //console.log(user);
 
     res.send(user);
 });
 app.post('/login', function(req,res){
     var user = login(req.body.username, req.body.password);
-    console.log(user);
+    //console.log(user);
 
     res.send(user);
 });
@@ -360,7 +360,7 @@ app.post('/addUserData', function(req,res){
         session = "";
     }
     var user = addUserData(req.body.username, session, req.body.appName, req.body.data);
-    console.log(user);
+    //console.log(user);
 
     res.send(user);
 });

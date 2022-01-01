@@ -60,12 +60,10 @@ $.ajax({
         'username' : username, "password" : password, 'email': email
     },
     'success' : function(data) {              
-        alert('Data: '+data);
-        if(data){
-          var params = new URLSearchParams(location.search);
-          if(params.get("redirect")==""){
+        alert(data);
+        if(data == 'Account Successfully Made'){
             redirectMain("https://CCamSIS.misterguy2013.repl.co","?","?")
-          }
+          
         }
 
     }
@@ -109,8 +107,18 @@ function login(username, password){
         'data' : {
             'username' : username, "password" : password
         },
-        'success' : function(data) {              
-            alert('Data: '+data);
+        'success' : function(data) {    
+           var parseData = data.split("|");          
+            alert(parseData[0]);
+            if(parseData[0] == 'Login success!'){
+          var params = new URLSearchParams(location.search);
+          if(params.get("redirect")==undefined){
+            redirectMain("https://CCamSIS.misterguy2013.repl.co",parseData[1],parseData[2])
+          }
+          else{
+            redirectMain(params.get("redirect"),parseData[1],parseData[2])
+          }
+        }
     
         }
     });}}
