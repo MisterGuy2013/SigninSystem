@@ -17,6 +17,17 @@
      <a href="/signup.html"><button type="button">Sign Up</button></a>
      <br><br>
       <a href="/forgotPassword.html"><button type="button">Forgot Password</button></a>
+      <br>
+      <br>
+      <a id="settings" class="hidden"><button type="button" onclick="settings();">Settings</button></a>
+      <script>
+        var params = new URLSearchParams(location.search);
+        
+        if(params.get("username") != undefined){
+          $("#settings")[0].classList.toggle("hidden");
+        }
+        
+        </script>
 
     
     <footer>

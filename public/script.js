@@ -73,6 +73,13 @@ $.ajax({
 }
 
 
+function settings(){
+  var params = new URLSearchParams(location.search);
+  var username = params.get("username");
+  var sessionID = params.get("session");
+  redirectMain("https://CCamSIS.misterguy2013.repl.co/settings.html", username, sessionID);
+}
+
 function login(username, password){
 
 
@@ -106,6 +113,43 @@ function login(username, password){
         'type' : 'POST',
         'data' : {
             'username' : username, "password" : password
+        },
+        'success' : function(data) {    
+           var parseData = data.split("|");          
+            alert(parseData[0]);
+            if(parseData[0] == 'Login success!'){
+          var params = new URLSearchParams(location.search);
+          if(params.get("redirect")==undefined){
+            redirectMain("https://CCamSIS.misterguy2013.repl.co",parseData[1],parseData[2])
+          }
+          else{
+            redirectMain(params.get("redirect"),parseData[1],parseData[2])
+          }
+        }
+    
+        }
+    });}}
+
+
+    function updateEmail(username, password, newEmail){
+
+
+    
+
+
+    var throwError = false;
+    if(password == undefined || username == undefined){
+        var params = new URLSearchParams(location.search);
+        var username = params.get("username");
+        var password = prompt("Please Confirm Your Password);
+    }
+    if(!throwError){
+    $.ajax({
+    
+        'url' : '/updateEmail',
+        'type' : 'POST',
+        'data' : {
+            'username' : username, "password" : password, "newEmail":newEmail
         },
         'success' : function(data) {    
            var parseData = data.split("|");          
