@@ -1,3 +1,6 @@
+//I know I spelled confirm wrong. I thought that I was spelling it the right way and "confirm" was wrong. But it's too late now. Maybe I'll do a commit where I just add comments and fix spelling mistakes.
+
+
 var darkMode = false;
 function signup(username, password){
     var throwError = false;
@@ -131,41 +134,146 @@ function login(username, password){
     });}}
 
 
-    function updateEmail(username, password, newEmail){
 
 
-    
+
+
+
+
+  
+
+
+
+function resetEmailMenu(){
+  if($("#emailReset")[0].classList == ""){
+    updateEmail();
+  }
+  else{
+    $("#emailReset")[0].classList.remove("hidden");
+  }
+}
+
+function resetPasswordMenu(){
+  if($("#passwordReset")[0].classList == ""){
+    updatePassword();
+
+  }
+  else{
+    $("#passwordReset")[0].classList.remove("hidden");
+  }
+}
+
+function updatePassword(username, oldPassword, newPassword){
 
 
     var throwError = false;
-    if(password == undefined || username == undefined){
+    if(oldPassword == undefined || username == undefined || newPassword == undefined){
         var params = new URLSearchParams(location.search);
-        var username = params.get("username");
-        var password = prompt("Please Confirm Your Password);
+        username = params.get("username");
+
+        if($("#oldPassword")[0].value == ""){
+            $("#1Err")[0].classList.remove("hidden");
+            throwError = true;
+        }
+        else{
+            $("#1Err")[0].classList.add("hidden");
+        }
+        if($("#password")[0].value == ""){
+            $("#2Err")[0].classList.remove("hidden");
+            throwError = true;
+        }
+        else{
+            $("#2Err")[0].classList.add("hidden");
+        }
+        if($("#confPassword")[0].value == ""){
+            $("#3Err")[0].classList.remove("hidden");
+            throwError = true;
+        }
+        else{
+            $("#3Err")[0].classList.add("hidden");
+        }
+        oldPassword = $("#oldPassword")[0].value;
+        password = $("#password")[0].value;
+        confPassword = $("#confPassword")[0].value;
+        if(password != confPassword){
+          alert("Passwords do not match");
+          throwError = true;
+        }
+        
     }
     if(!throwError){
     $.ajax({
     
-        'url' : '/updateEmail',
+        'url' : '/updatePassword',
         'type' : 'POST',
         'data' : {
-            'username' : username, "password" : password, "newEmail":newEmail
+            'username' : username, "oldPassword" : oldPassword, "newPassword":password
         },
         'success' : function(data) {    
            var parseData = data.split("|");          
             alert(parseData[0]);
             if(parseData[0] == 'Login success!'){
-          var params = new URLSearchParams(location.search);
-          if(params.get("redirect")==undefined){
+            var params = new URLSearchParams(location.search);
             redirectMain("https://CCamSIS.misterguy2013.repl.co",parseData[1],parseData[2])
-          }
-          else{
-            redirectMain(params.get("redirect"),parseData[1],parseData[2])
-          }
+          
         }
     
         }
     });}}
+
+
+    function updateEmail(username, password, newEmail){
+console.log("E")
+
+    var throwError = false;
+    if(password == undefined || username == undefined || newEmail == undefined){
+        var params = new URLSearchParams(location.search);
+        username = params.get("username");
+
+        if($("#passwordEmail")[0].value == ""){
+            $("#4Err")[0].classList.remove("hidden");
+            throwError = true;console.log(throwError)
+        }
+        else{
+            $("#4Err")[0].classList.add("hidden");
+        }
+        if($("#email")[0].value == ""){
+            $("#5Err")[0].classList.remove("hidden");
+            throwError = true; 
+        }
+        else{
+            $("#5Err")[0].classList.add("hidden");
+        }
+        newEmail = $("#email")[0].value;
+        password = $("#passwordEmail")[0].value;
+        
+        
+        
+    }
+    if(!throwError){
+      console.log("Ee")
+    $.ajax({
+    
+        'url' : '/updateEmail',
+        'type' : 'POST',
+        'data' : {
+            'username' : username, "password":password, "newEmail":newEmail
+        },
+        'success' : function(data) {    
+           var parseData = data.split("|");          
+            alert(parseData[0]);
+            if(parseData[0] == 'Login success!'){
+            var params = new URLSearchParams(location.search);
+            redirectMain("https://CCamSIS.misterguy2013.repl.co",parseData[1],parseData[2])
+          
+        }
+    
+        }
+    });}}
+
+
+
+
 
 
 

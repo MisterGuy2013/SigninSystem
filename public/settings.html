@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chicken Signin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="jquery-3.6.0.js"></script>
+  <link href="style.css" rel="stylesheet">
+
+</head>
+<body>
+  <header>
+    ChickenCam Universal SIS
+  </header>
+      <div class="hidden" id="passwordReset">
+        
+        <div class="inputText">
+            <input placeholder="Old Password" type="password" id="oldPassword"></input>
+            <div class="hidden" id="1Err">This is a required question</div>
+        </div>
+
+      
+        <div class="inputText">
+            <input placeholder="Password" type="password" id="password"></input>
+            <div class="hidden" id="2Err">This is a required question</div>
+        </div>
+
+        
+
+        <div class="inputText">
+            <input type="password" placeholder="Confirm Password" id="confPassword"></input>
+            <div class="hidden" id="3Err">This is a required question</div>
+        </div>
+
+        </div>
+      <button onclick="resetPasswordMenu();">Reset Password</button>
+      <br>
+
+
+      <div class="hidden" id="emailReset">
+        
+
+
+      
+        <div class="inputText">
+            <input placeholder="Password" type="password" id="passwordEmail"></input>
+            <div class="hidden" id="4Err">This is a required question</div>
+        </div>
+
+        
+
+        <div class="inputText">
+            <input type="text" placeholder="New Email" id="email"></input>
+            <div class="hidden" id="5Err">This is a required question</div>
+        </div>
+
+        </div>
+      <button onclick="resetEmailMenu();">Reset Email</button>
+      <script>
+        var params = new URLSearchParams(location.search);
+        
+        
+        
+        </script>
+
+    
+    <script src="script.js"></script>
+    </body>
+    </html>

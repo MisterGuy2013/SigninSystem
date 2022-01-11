@@ -106,6 +106,67 @@ else{
 }
 }
 
+
+function updatePassword(username, password, newPassword) {
+  
+    var errorMes = "Username or Password incorrect";
+    if(users.filter(e => e.Username === username).length > 0 == true){
+    const user = users.find(v => v.Username === username);
+    const userIndex = users.findIndex(v => v.Username === username);
+
+    const [salt, key] = user.Password.split(':');
+    const hashedBuffer = scryptSync(password, salt, 64);
+  
+    const keyBuffer = Buffer.from(key, 'hex');
+    const match = timingSafeEqual(hashedBuffer, keyBuffer);
+    
+    if (match) {
+       const salt = randomBytes(16).toString('hex');
+      const hashedPassword = scryptSync(newPassword, salt, 64).toString('hex');
+        user.Password = `${salt}:${hashedPassword}`
+
+        users.splice(userIndex, userIndex, user);
+        writeUser(users);
+
+        return `Success!`
+    } else {
+        return errorMes;
+    }
+}
+else{
+    return errorMes;
+}
+}
+
+function updateEmail(username, password, email) {
+  
+    var errorMes = "Username or Password incorrect";
+    if(users.filter(e => e.Username === username).length > 0 == true){
+    const user = users.find(v => v.Username === username);
+    const userIndex = users.findIndex(v => v.Username === username);
+
+    const [salt, key] = user.Password.split(':');
+    const hashedBuffer = scryptSync(password, salt, 64);
+  
+    const keyBuffer = Buffer.from(key, 'hex');
+    const match = timingSafeEqual(hashedBuffer, keyBuffer);
+    
+    if (match) {
+        user.Email = email;
+
+        users.splice(userIndex, userIndex, user);
+        writeUser(users);
+
+        return `Success!`
+    } else {
+        return errorMes;
+    }
+}
+else{
+    return errorMes;
+}
+}
+
 function addUserData(username, loginSession, appName, data){
     var errorMes = "Username or SessionID incorrect";
     if(users.filter(e => e.Username === username).length > 0 == true){
@@ -177,12 +238,12 @@ function sendEmail(username, email){
 
     var beggingString = `https://CCamSIS.misterguy2013.repl.co`;
 
-    var errorMes = "Username not found";
+    //var errorMes = "Username not found"; this is very bad because it gives away usrnames
     if(users.filter(e => e.Username === username).length > 0 == true){
     const user = users.find(v => v.Username === username);
     const userIndex = users.findIndex(v => v.Username === username);
 
-    if(user.Email === email){
+    if(email == user.Email){
         user.Token = token;
         users.splice(userIndex, userIndex, user);
         writeUser(users);
@@ -240,7 +301,7 @@ function sendEmail(username, email){
       }); 
     }
     else{
-        return errorMes;
+        return "";
     }
 
 
@@ -353,7 +414,23 @@ app.post('/login', function(req,res){
 
     res.send(user);
 });
+app.post('/updatePassword', function(req,res){
+    var response = updatePassword(req.body.username, req.body.oldPassword, req.body.newPassword);
+    //console.log(user);
+
+    res.send(response);
+});
+app.post('/updateEmail', function(req,res){
+    var response = updateEmail(req.body.username, req.body.password, req.body.newEmail);
+    //console.log(user);
+
+    res.send(response);
+});
 app.post('/addUserData', function(req,res){
+  if(req.body.data == undefined || req.body.appName == undefined){
+    res.send("Error|Bad Request");
+  }
+  else{
   var session = req.body.session;
    if(session == "E"){
         //To make sure people don't use blank tokens
@@ -363,8 +440,13 @@ app.post('/addUserData', function(req,res){
     //console.log(user);
 
     res.send(user);
+  }
 });
 app.post('/getUserData', function(req,res){
+   if(req.body.appName == undefined){
+    res.send("Error|Bad Request");
+  }
+  else{
    var session = req.body.session;
    if(session == "E"){
         //To make sure people don't use blank tokens
@@ -374,10 +456,11 @@ app.post('/getUserData', function(req,res){
     
 
     res.send(user);
+  }
 });
 app.post('/forgot', function(req,res){
     sendEmail(req.body.username, req.body.email);
-    res.send("done");
+    res.send("An emal has been sent if the account exists");
 });
 app.post("/resetService", function(req, res){
     var username = req.body.username;
