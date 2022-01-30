@@ -1,18 +1,23 @@
-const { createHash } = require('crypto');
 const express = require("express");
-const bodyParser = require("body-parser");
 const path = require('path');
+const bodyParser = require("body-parser");
+const { createHash } = require('crypto');
+const cors = require('cors');
+
 const { scryptSync, randomBytes, timingSafeEqual, createSign, createVerify } = require('crypto');
 const { publicKey, privateKey } = require('keypair');
-const fs = require("fs");
-const nodemailer = require('nodemailer'); 
 
+const nodemailer = require('nodemailer'); 
 const Database = require("@replit/database");
+const fs = require("fs");
+
 
 const db = new Database()
 
 
 const app =  express();
+
+
 const port = process.env.PORT || 8080;
 
 
@@ -426,7 +431,7 @@ app.post('/updateEmail', function(req,res){
 
     res.send(response);
 });
-app.post('/addUserData', function(req,res){
+app.post('/addUserData', cors(), function(req,res){
   if(req.body.data == undefined || req.body.appName == undefined){
     res.send("Error|Bad Request");
   }
@@ -442,7 +447,7 @@ app.post('/addUserData', function(req,res){
     res.send(user);
   }
 });
-app.post('/getUserData', function(req,res){
+app.post('/getUserData', cors(), function(req,res){
    if(req.body.appName == undefined){
     res.send("Error|Bad Request");
   }
